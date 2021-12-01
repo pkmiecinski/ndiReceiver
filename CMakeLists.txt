@@ -35,7 +35,7 @@ find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
-
+target_link_libraries( ${PROJECT_NAME} -lpthread)
 target_link_libraries( ${PROJECT_NAME} -lartnet)
 target_link_libraries( ${PROJECT_NAME} -lboost_system)
 target_link_libraries( ${PROJECT_NAME} -lboost_thread)

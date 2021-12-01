@@ -4,7 +4,9 @@
 
 NdiReceiver::NdiReceiver()
 {
-    
+    outputWidth = 100;
+    outputHeight = 100;
+
 }
 
 int NdiReceiver::initialize()
@@ -36,17 +38,18 @@ int NdiReceiver::initialize()
 
 	// Destroy the NDI finder. We needed to have access to the pointers to p_sources[0]
 	NDIlib_find_destroy(pNDI_find);	
+
+
     return 0;
 }
 
-int NdiReceiver::captureInLoop()
+void NdiReceiver::captureInLoop(std::string agrument)
 {
     NDIlib_video_frame_v2_t video_frame;
     
-    // openCV matrix, might be slow  
-    cv::Mat mat1 = cv::Mat::zeros(frameHigh, frameWidth, CV_8UC4);
-    
-    cv::Mat ledMat = cv::Mat::zeros(16, 16, CV_8UC4);
+    // openCV matrix, might be slow   
+    //cv::Mat outputMatrix  = cv::Mat::zeros(outputWidth, outputHeight, CV_8UC4);
+    mat1 = cv::Mat::zeros(frameHigh, frameWidth, CV_8UC4);
 
     while(cv::waitKey(1) != 27)
     {// The descriptors
@@ -56,14 +59,50 @@ int NdiReceiver::captureInLoop()
 			case NDIlib_frame_type_video:
                 memcpy(mat1.data, video_frame.p_data , frameWidth * frameHigh * pixelSize);
 
-                //resize(mat1, ledMat, cv::Size(500, 500), cv::INTER_LINEAR);
+                resize(mat1, outputMatrix, cv::Size(outputWidth, outputHeight), cv::INTER_LINEAR);
 
-                cv::imshow("Display window", mat1);
+                //cv::imshow("Display window", outputMatrix);
 				NDIlib_recv_free_video_v2(pNDI_recv, &video_frame);
                 break;
 
 		}
 	} 
+}
+
+
+int NdiReceiver::startNdiRecvThread()
+{
+
+    return 0;
+}
+
+int NdiReceiver::stopNdiRecvThread()
+{
+    return 0;
+}
+
+int NdiReceiver::setOutputSize(uint16_t outputWidthArg, uint16_t outputHeightArg)
+{
+    outputWidth = outputWidthArg; 
+    outputHeight = outputHeightArg;
+
+
+    outputMatrix  = cv::Mat::zeros(outputWidth, outputHeight, CV_8UC4);
+}
+
+uint8_t NdiReceiver::getOutputPixelValueRed(uint16_t outputWidthArg, uint16_t outputHeightArg)
+{
+    return  outputMatrix.data[outputMatrix.channels()*(outputMatrix.cols*outputWidthArg + outputHeightArg) + 2];
+}
+
+uint8_t NdiReceiver::getOutputPixelValueGreen(uint16_t outputWidthArg, uint16_t outputHeightArg)
+{
+    return  outputMatrix.data[outputMatrix.channels()*(outputMatrix.cols*outputWidthArg + outputHeightArg) + 1];
+}
+
+uint8_t NdiReceiver::getOutputPixelValueBlue(uint16_t outputWidthArg, uint16_t outputHeightArg)
+{
+    return  outputMatrix.data[outputMatrix.channels()*(outputMatrix.cols*outputWidthArg + outputHeightArg) + 0];
 }
 
 

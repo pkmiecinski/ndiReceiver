@@ -7,6 +7,7 @@ class TimingCalculator
         TimingCalculator(uint16_t argBpm);
         TimingCalculator();
         int setBpm(uint16_t argBpm);
+        uint32_t getBeatTime();
         uint32_t getBarTime();
         uint32_t getPhraseTime();
 
